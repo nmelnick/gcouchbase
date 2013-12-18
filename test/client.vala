@@ -203,7 +203,12 @@ public class ClientTest {
 			assert( get_result != null );
 			assert( get_result.bytes_string() == "0" );
 		});
-		Test.add_func("/gcouchbase/client/post_action/remove", () => {
+		Test.add_func("/gcouchbase/client/touch/exist", () => {
+			var client = get_client();
+			bool result = client.touch( "hey-o", ( time_t() + 30 ) );
+			assert( result == true );
+		});
+		Test.add_func("/gcouchbase/client/z_post_action/remove", () => {
 			var client = get_client();
 			bool result = client.remove("exp-inc");
 			assert( result == true );

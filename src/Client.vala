@@ -336,6 +336,33 @@ namespace Couchbase {
 		}
 
 		/**
+		 * Update the expiration time of an existing key.
+		 *
+		 * Example:
+		 * {{{
+		 *   bool success = client.touch( "example-key", ( time_t() + 30 ) );
+		 * }}}
+		 *
+		 * @param key Key to touch
+		 * @param expires New expiration time
+		 * @return true if key is updated
+		 */
+		public bool touch( string key, time_t expires ) {
+			LibCouchbase.TouchCommand*[] touch_cmds = new LibCouchbase.TouchCommand*[1];
+			var tc = LibCouchbase.TouchCommand() {
+				key = key.data,
+				exptime = expires
+			};
+			touch_cmds[0] = &tc;
+			var status = instance.touch( null, touch_cmds );
+			if ( status != LibCouchbase.StatusResponse.SUCCESS ) {
+				return false;
+			}
+			instance.wait();
+			return true;
+		}
+
+		/**
 		 * Retrieve the bytes value of a key
 		 *
 		 * Example:
