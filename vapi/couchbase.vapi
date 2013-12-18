@@ -901,11 +901,6 @@ namespace LibCouchbase {
 
 	/**
 	 * The libcouchbase client instance.
-	 *
-	 * All original libcouchbase functionality, that use the command structs,
-	 * are available using the methods prefixed with "cmd_". Simplified methods
-	 * are available with the non cmd-prefixed methods, and should cover most
-	 * use cases.
 	 */
 	[SimpleType]
 	[CCode (cname = "lcb_t", free_function = "lcb_destroy", unref_function = "", lower_case_cprefix = "lcb_")]
