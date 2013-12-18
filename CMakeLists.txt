@@ -30,7 +30,7 @@ set (VAPIDIRS
 	--vapidir='${CMAKE_SOURCE_DIR}/vapi'
 )
 set (DEFAULT_VALA_OPTIONS
-	--pkg couchbase
+	--pkg libcouchbase
 	${VAPIDIRS}
 	--enable-experimental
 	--target-glib=2.32
@@ -56,6 +56,10 @@ SET( CORE_DEPS_CFLAGS_ALL
 SET( CORE_DEPS_LIBRARY_DIRS 
 	${CORE_DEPS_LIBRARY_DIRS}
 	${COUCHBASE_LIBRARY})
+
+SET( CORE_DEPS_LIBRARIES 
+	${CORE_DEPS_LIBRARIES}
+	couchbase)
 
 add_subdirectory (src)
 add_subdirectory (test)

@@ -2,6 +2,9 @@ include(ValaPrecompile)
 
 vala_precompile(LIBGCOUCHBASE_VALA_C 
 	Client.vala
+	GenericResult.vala
+	GetResult.vala
+	StoreResult.vala
 PACKAGES
 	${DEFAULT_PACKAGES}
 OPTIONS
