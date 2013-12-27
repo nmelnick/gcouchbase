@@ -67,6 +67,12 @@ public class ClientTest {
 			assert( str != null );
 			assert( str == """{"freaking":"bar"}""" );
 		});
+		Test.add_func("/gcouchbase/client/get_object", () => {
+			var client = get_client();
+			FreakingClass? fc = client.get_object<FreakingClass>("foo");
+			assert( fc != null );
+			assert( fc.freaking == "bar" );
+		});
 		Test.add_func("/gcouchbase/client/store_bytes_result/valid-kv", () => {
 			var client = get_client();
 			Couchbase.StoreResult? result = client.store_bytes_result(
@@ -124,6 +130,17 @@ public class ClientTest {
 			Couchbase.GetResult? get_result = client.get_result("hey-o");
 			assert( get_result != null );
 			assert( get_result.bytes_string() == "some data6" );
+		});
+		Test.add_func("/gcouchbase/client/store_object", () => {
+			var client = get_client();
+			var fc = new FreakingClass();
+			fc.freaking = "whoa";
+			bool result = client.store_object(
+				Couchbase.StoreMode.SET, "baz", fc );
+			assert( result == true );
+			Couchbase.GetResult? get_result = client.get_result("baz");
+			assert( get_result != null );
+			assert( get_result.bytes_string() == """{"freaking":"whoa"}""" );
 		});
 		Test.add_func("/gcouchbase/client/append_bytes_result/valid-kv", () => {
 			var client = get_client();
@@ -224,6 +241,11 @@ public class ClientTest {
 			assert( result == true );
 			get_result = client.get_result("hey-a");
 			assert( get_result == null );
+
+			result = client.remove("baz");
+			assert( result == true );
+			get_result = client.get_result("baz");
+			assert( get_result == null );
 		});
 	}
 
@@ -236,4 +258,8 @@ public class ClientTest {
 		}
 		return a;
 	}
+}
+
+public class FreakingClass : Object {
+	public string? freaking { get; set; }
 }

@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.8)
 cmake_policy(VERSION 2.8)
-project(Ambition)
+project(Couchbase)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
 enable_testing()
 
@@ -38,14 +38,14 @@ set (DEFAULT_VALA_OPTIONS
 	-g
 )
 
-SET( CORE_DEPS_PACKAGES
+SET( DEFAULT_PACKAGES
 	glib-2.0
+	gmodule-2.0
 	gee-0.8
 	json-glib-1.0
-	gmodule-2.0
 )
 find_package(PkgConfig)
-pkg_check_modules(CORE_DEPS REQUIRED ${CORE_DEPS_PACKAGES} glib-2.0>=2.32)
+pkg_check_modules(CORE_DEPS REQUIRED ${DEFAULT_PACKAGES} glib-2.0>=2.32)
 SET( CMAKE_BUILD_TYPE Debug )
 SET( CORE_DEPS_CFLAGS_ALL
 	${CORE_DEPS_CFLAGS}

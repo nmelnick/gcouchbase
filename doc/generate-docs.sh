@@ -12,6 +12,8 @@ valadoc \
 	--driver=0.18.x \
 	--pkg=glib-2.0 \
 	--pkg=gmodule-2.0 \
+	--pkg=gee-0.8 \
+	--pkg=json-glib-1.0 \
 	--pkg=libcouchbase \
 	`find ../src -name \*.vala -print` \
 	--force

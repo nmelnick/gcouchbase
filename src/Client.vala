@@ -60,6 +60,9 @@ namespace Couchbase {
 		 */
 		public LibCouchbase.Client instance;
 
+		private JSON.Serializer serializer = new JSON.Serializer();
+		private JSON.Deserializer deserializer = new JSON.Deserializer();
+
 		/**
 		 * Set the number of usec the library should allow an operation to
 		 * be valid.
@@ -200,6 +203,25 @@ namespace Couchbase {
 		}
 
 		/**
+		 * Retrieve the deserialized object of the value attached to a key
+		 *
+		 * Example:
+		 * {{{
+		 *   ExampleObject? value = client.get_object<ExampleObject>("my-key");
+		 * }}}
+		 *
+		 * @param key Key to retrieve
+		 * @return Object type, or null if the key isn't found
+		 */
+		public T? get_object<T>( string key ) {
+			string? json = this.get(key);
+			if ( json != null ) {
+				return (T) deserializer.deserialize( json, typeof(T) );
+			}
+			return null;
+		}
+
+		/**
 		 * Store a string value in the bucket.
 		 *
 		 * Example:
@@ -222,6 +244,28 @@ namespace Couchbase {
 		 */
 		public bool store( StoreMode mode, string key, string value, time_t expires = -1 ) {
 			return store_bytes( mode, key, value.data, expires );
+		}
+
+		/**
+		 * Store a serialized object value in the bucket.
+		 *
+		 * Example:
+		 * {{{
+		 *   // Add a new key
+		 *   var example_object = new ExampleObject();
+		 *   example_object.test = "pass";
+		 *   var success = client.store( StoreMode.ADD, "my-key", "example_object );
+		 * }}}
+		 *
+		 * @param mode The StoreMode for this action: ADD, REPLACE, or SET
+		 * @param key The key
+		 * @param value The value
+		 * @param expires Optionally, the unix timestamp when the key expires
+		 * @return true if the key/value pair was stored successfully
+		 */
+		public bool store_object( StoreMode mode, string key, Object value, time_t expires = -1  ) {
+			var serialized = serializer.serialize(value);
+			return store( mode, key, serialized, expires );
 		}
 
 		/**
