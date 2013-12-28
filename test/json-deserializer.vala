@@ -38,7 +38,6 @@ public class JsonDeserializerTest : Object {
 			assert( o != null );
 			assert( o is TestObjectObject );
 			assert( ( (TestObjectObject) o ).bar != null );
-			// TODO: Arrays
 		});
 		Test.add_func("/gcouchbase/json/deserialize/json/everything", () => {
 			var json = new Couchbase.JSON.Deserializer();
@@ -56,32 +55,33 @@ public class JsonDeserializerTest : Object {
 			assert( to.super_container.example == "I am here" );
 			assert( to.super_container.container != null );
 			assert( to.super_container.container.foo != null );
-			// TODO: Arrays
+			assert( to.super_container.container.foo[0] == "bar" );
 		});
-		// Test.add_func("/gcouchbase/json/serialize/json/string_array", () => {
-		// 	var json = new Couchbase.JSON.Serializer();
-		// 	string result = json.serialize( new TestStringArrayObject() );
-		// 	assert( result != null );
-		// 	assert( result == """{"foo":["bar","baz"]}""" );
-		// });
-		// Test.add_func("/gcouchbase/json/serialize/json/string_arraylist", () => {
-		// 	var json = new Couchbase.JSON.Serializer();
-		// 	string result = json.serialize( new TestStringArrayListObject() );
-		// 	assert( result != null );
-		// 	assert( result == """{"foo":["bar","baz"]}""" );
-		// });
-		// Test.add_func("/gcouchbase/json/serialize/json/ignore", () => {
-		// 	var json = new Couchbase.JSON.Serializer();
-		// 	string result = json.serialize( new TestIgnoreObject() );
-		// 	assert( result != null );
-		// 	assert( result == """{"not_ignored":"woohoo"}""" );
-		// });
-		// Test.add_func("/gcouchbase/json/serialize/json/rename", () => {
-		// 	var json = new Couchbase.JSON.Serializer();
-		// 	string result = json.serialize( new TestRenameObject() );
-		// 	assert( result != null );
-		// 	assert( result == """{"renamed":"woohoo"}""" );
-		// });
+		Test.add_func("/gcouchbase/json/deserialize/json/string_array", () => {
+			var json = new Couchbase.JSON.Deserializer();
+			Object o = json.deserialize( """{"foo":["bar","baz"]}""", typeof( TestStringArrayObject ) );
+			assert( o != null );
+			assert( o is TestStringArrayObject );
+			assert( ( (TestStringArrayObject) o ).foo != null );
+			assert( ( (TestStringArrayObject) o ).foo[0] == "bar" );
+			assert( ( (TestStringArrayObject) o ).foo[1] == "baz" );
+		});
+		Test.add_func("/gcouchbase/json/deserialize/json/string_arraylist", () => {
+			var json = new Couchbase.JSON.Deserializer();
+			Object o = json.deserialize( """{"foo":["bar","baz"]}""", typeof( TestStringArrayListObject ) );
+			assert( o != null );
+			assert( o is TestStringArrayListObject );
+			assert( ( (TestStringArrayListObject) o ).foo != null );
+			assert( ( (TestStringArrayListObject) o ).foo[0] == "bar" );
+			assert( ( (TestStringArrayListObject) o ).foo[1] == "baz" );
+		});
+		Test.add_func("/gcouchbase/json/deserialize/json/node", () => {
+			var json = new Couchbase.JSON.Deserializer();
+			Object o = json.deserialize( """{"things":["bar",{"baz":true}]}""", typeof( TestNodeObject ) );
+			assert( o != null );
+			assert( o is TestNodeObject );
+			assert( ( (TestNodeObject) o ).things != null );
+		});
 	}
 }
 

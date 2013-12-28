@@ -40,13 +40,19 @@ public class TestBoolObject : Object {
 }
 
 public class TestStringArrayObject : Object {
-	public string[] foo { get; set; default = { "bar", "baz" }; }
+	public string[] foo { get; set; }
+
+	public TestStringArrayObject() {}
+	public TestStringArrayObject.with_data() {
+		foo = { "bar", "baz" };
+	}
 }
 
 public class TestStringArrayListObject : Object {
 	public Gee.ArrayList<string> foo { get; set; default = new Gee.ArrayList<string>(); }
 
-	public TestStringArrayListObject() {
+	public TestStringArrayListObject() {}
+	public TestStringArrayListObject.with_data() {
 		foo.add("bar");
 		foo.add("baz");
 	}
@@ -56,7 +62,7 @@ public class TestObjectObject : Object {
 	public Object bar { get; set; }
 
 	public TestObjectObject() {}
-	public TestObjectObject.with_data() { this.bar = new TestStringArrayObject(); }
+	public TestObjectObject.with_data() { this.bar = new TestStringArrayObject.with_data(); }
 }
 
 public class TestEverythingObject : Object {
@@ -77,8 +83,12 @@ public class TestEverythingObject : Object {
 }
 
 public class TestEverythingContainerObject : Object {
-	public TestStringArrayListObject container { get; set; default = new TestStringArrayListObject(); }
+	public TestStringArrayListObject container { get; set; default = new TestStringArrayListObject.with_data(); }
 	public string example { get; set; default = "I am here"; }
+}
+
+public class TestNodeObject : Object {
+	public Couchbase.JSON.Node things { get; set; }
 }
 
 public class TestIgnoreObject : Object {

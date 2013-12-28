@@ -80,6 +80,9 @@ namespace Couchbase.JSON {
 				case "gdouble":
 					v.set_double( node.get_double() );
 					break;
+				case "CouchbaseJSONNode":
+					v.set_object( new Node(node) );
+					break;
 				default:
 					return false;
 			}
@@ -87,16 +90,21 @@ namespace Couchbase.JSON {
 		}
 
 		public static bool parse_array( ref Value v, Json.Node node ) {
-			// stdout.printf( "Type: %s\n", v.type().name() );
 			Json.Array array = node.get_array();
 			if ( array.get_length() == 0 ) {
 				return false;
 			}
-			array.foreach_element(
-				( array, index, node ) => {
-
-				}
-			);
+			string type_name = v.type().name();
+			if ( type_name == "GeeArrayList" ) {
+				return parse_arraylist( ref v, array );
+			} else if ( type_name == "GStrv" ) {
+				return parse_stringarray( ref v, array );
+			} else if ( type_name == "GIntv" ) {
+				return parse_intarray( ref v, array );
+			} else if ( type_name == "CouchbaseJSONNode" ) {
+				v.set_object( new Node(node) );
+				return true;
+			}
 			return false;
 		}
 
@@ -104,43 +112,84 @@ namespace Couchbase.JSON {
 			return false;
 		}
 
-		// private static void serialize_arraylist( Value v, Json.Builder b ) {
-		// 	Type generic_type = ( (ArrayList) v ).element_type;
-		// 	b.begin_array();
-		// 	switch (generic_type.name()) {
-		// 		case "gchararray":
-		// 			ArrayList<string> array = (ArrayList<string>) v;
-		// 			foreach ( var element in array ) {
-		// 				b.add_string_value(element);
-		// 			}
-		// 			break;
-		// 		case "gint":
-		// 			ArrayList<int> array = (ArrayList<int>) v;
-		// 			foreach ( var element in array ) {
-		// 				b.add_int_value(element);
-		// 			}
-		// 			break;
-		// 		case "gboolean":
-		// 			ArrayList<bool> array = (ArrayList<bool>) v;
-		// 			foreach ( var element in array ) {
-		// 				b.add_boolean_value(element);
-		// 			}
-		// 			break;
-		// 		case "gdouble":
-		// 			ArrayList<double?> array = (ArrayList<double?>) v;
-		// 			foreach ( var element in array ) {
-		// 				b.add_double_value(element);
-		// 			}
-		// 			break;
-		// 		case "GObject":
-		// 			ArrayList<Object> array = (ArrayList<Object>) v;
-		// 			foreach ( var element in array ) {
-		// 				serialize_object_as_object( element, b );
-		// 			}
-		// 			break;
-		// 	}
-		// 	b.end_array();
-		// }
+		private static bool parse_arraylist( ref Value v, Json.Array array ) {
+			Type generic_type = array.get_element(0).get_value_type();
+			switch (generic_type.name()) {
+				case "gchararray":
+					ArrayList<string> new_array = new ArrayList<string>();
+					array.foreach_element(
+						( array, index, node ) => {
+							new_array.add( node.get_string() );
+						}
+					);
+					v.set_object(new_array);
+					return true;
+				case "gint":
+					ArrayList<int> new_array = new ArrayList<int>();
+					array.foreach_element(
+						( array, index, node ) => {
+							new_array.add( (int) node.get_int() );
+						}
+					);
+					v.set_object(new_array);
+					return true;
+				case "gint64":
+					ArrayList<int64?> new_array = new ArrayList<int64?>();
+					array.foreach_element(
+						( array, index, node ) => {
+							new_array.add( node.get_int() );
+						}
+					);
+					v.set_object(new_array);
+					return true;
+				case "gdouble":
+					ArrayList<double?> new_array = new ArrayList<double?>();
+					array.foreach_element(
+						( array, index, node ) => {
+							new_array.add( node.get_double() );
+						}
+					);
+					v.set_object(new_array);
+					return true;
+				default:
+					if ( generic_type.is_object() ) {
+						ArrayList<Object> new_array = new ArrayList<Object>();
+						array.foreach_element(
+							( array, index, node ) => {
+								Value obj_v = Value(generic_type);
+								parse_object( ref obj_v, node );
+								new_array.add( (Object) obj_v );
+							}
+						);
+						v.set_object(new_array);
+						return true;
+					}
+					break;
+			}
+			return false;
+		}
+
+		private static bool parse_stringarray( ref Value v, Json.Array array ) {
+			string[] new_array = new string[ array.get_length() ];
+			array.foreach_element(
+				( array, index, node ) => {
+					new_array[index] = node.get_string();
+				}
+			);
+			v.set_boxed(new_array);
+			return true;
+		}
+
+		private static bool parse_intarray( ref Value v, Json.Array array ) {
+			int[] new_array = new int[ array.get_length() ];
+			array.foreach_element(
+				( array, index, node ) => {
+					new_array[index] = (int) node.get_int();
+				}
+			);
+			v.set_boxed(new_array);
+			return true;
+		}
 	}
 
 	public class DeserializeNodeWrapper : Object {

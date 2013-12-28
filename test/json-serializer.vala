@@ -53,13 +53,13 @@ public class JsonSerializerTest : Object {
 		});
 		Test.add_func("/gcouchbase/json/serialize/json/string_array", () => {
 			var json = new Couchbase.JSON.Serializer();
-			string result = json.serialize( new TestStringArrayObject() );
+			string result = json.serialize( new TestStringArrayObject.with_data() );
 			assert( result != null );
 			assert( result == """{"foo":["bar","baz"]}""" );
 		});
 		Test.add_func("/gcouchbase/json/serialize/json/string_arraylist", () => {
 			var json = new Couchbase.JSON.Serializer();
-			string result = json.serialize( new TestStringArrayListObject() );
+			string result = json.serialize( new TestStringArrayListObject.with_data() );
 			assert( result != null );
 			assert( result == """{"foo":["bar","baz"]}""" );
 		});
