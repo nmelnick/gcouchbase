@@ -51,30 +51,6 @@ namespace Couchbase.JSON {
 		public Type get_value_type() {
 			return node.get_value_type();
 		}
-		public unowned Json.Node init(Json.NodeType type) {
-			return node.init(type);
-		}
-		public unowned Json.Node init_array(Json.Array? array) {
-			return node.init_array(array);
-		}
-		public unowned Json.Node init_boolean(bool value) {
-			return node.init_boolean(value);
-		}
-		public unowned Json.Node init_double(double value) {
-			return node.init_double(value);
-		}
-		public unowned Json.Node init_int(int64 value) {
-			return node.init_int(value);
-		}
-		public unowned Json.Node init_null() {
-			return node.init_null();
-		}
-		public unowned Json.Node init_object(Json.Object? object) {
-			return node.init_object(object);
-		}
-		public unowned Json.Node init_string(string? value) {
-			return node.init_string(value);
-		}
 		public bool is_null() {
 			return node.is_null();
 		}
