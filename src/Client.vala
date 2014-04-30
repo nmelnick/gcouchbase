@@ -180,7 +180,12 @@ namespace Couchbase {
 					instance.get_error(status)
 				);
 			}
-			instance.wait();
+			status = instance.wait();
+			if ( status != LibCouchbase.StatusResponse.SUCCESS ) {
+				throw new ClientError.CONNECT_ERROR(
+					instance.get_error(status)
+				);
+			}
 		}
 
 		/**
@@ -222,6 +227,123 @@ namespace Couchbase {
 		}
 
 		/**
+		 * Set a string value in the bucket.
+		 *
+		 * Example:
+		 * {{{
+		 *   // Add a new key
+		 *   var success = client.set( "my-key", "example" );
+		 *   // Add a key with expiration 30 seconds from now
+		 *   success = client.set( "my-expiring", "example", ( time() + 30 ) );
+		 * }}}
+		 *
+		 * @param key The key
+		 * @param value The value
+		 * @param expires Optionally, the unix timestamp when the key expires
+		 * @return true if the key/value pair was stored successfully
+		 */
+		public new bool set( string key, string value, time_t expires = -1 ) {
+			return store( StoreMode.SET, key, value, expires );
+		}
+
+		/**
+		 * Set a key and an object in the bucket.
+		 *
+		 * Example:
+		 * {{{
+		 *   var example_object = new ExampleObject();
+		 *   example_object.test = "pass";
+		 *   var success = client.set_object( "my-key", example_object );
+		 * }}}
+		 *
+		 * @param key The key
+		 * @param value The value
+		 * @param expires Optionally, the unix timestamp when the key expires
+		 * @return true if the key/value pair was stored successfully
+		 */
+		public bool set_object( string key, Object value, time_t expires = -1 ) {
+			return store_object( StoreMode.SET, key, value, expires );
+		}
+
+		/**
+		 * Replace a string value in the bucket.
+		 *
+		 * Example:
+		 * {{{
+		 *   // Replace an existing key
+		 *   var success = client.replace( "my-key", "example" );
+		 *   // Replace a key with expiration 30 seconds from now
+		 *   success = client.replace( "my-expiring", "example", ( time() + 30 ) );
+		 * }}}
+		 *
+		 * @param key The key
+		 * @param value The value
+		 * @param expires Optionally, the unix timestamp when the key expires
+		 * @return true if the key/value pair was stored successfully
+		 */
+		public bool replace( string key, string value, time_t expires = -1 ) {
+			return store( StoreMode.REPLACE, key, value, expires );
+		}
+
+		/**
+		 * Replace an object in the bucket.
+		 *
+		 * Example:
+		 * {{{
+		 *   var example_object = new ExampleObject();
+		 *   example_object.test = "pass";
+		 *   var success = client.replace_object( "my-key", example_object );
+		 * }}}
+		 *
+		 * @param key The key
+		 * @param value The value
+		 * @param expires Optionally, the unix timestamp when the key expires
+		 * @return true if the key/value pair was stored successfully
+		 */
+		public bool replace_object( string key, Object value, time_t expires = -1 ) {
+			return store_object( StoreMode.REPLACE, key, value, expires );
+		}
+
+		/**
+		 * Add a string value to the bucket.
+		 *
+		 * Example:
+		 * {{{
+		 *   // Add a new key
+		 *   var success = client.add( "my-key", "example" );
+		 *   // Replace a key with expiration 30 seconds from now
+		 *   success = client.add( "my-expiring", "example", ( time() + 30 ) );
+		 * }}}
+		 *
+		 * @param key The key
+		 * @param value The value
+		 * @param expires Optionally, the unix timestamp when the key expires
+		 * @return true if the key/value pair was stored successfully
+		 */
+		public bool add( string key, string value, time_t expires = -1 ) {
+			return store( StoreMode.ADD, key, value, expires );
+		}
+
+		/**
+		 * Add an object to the bucket.
+		 *
+		 * Example:
+		 * {{{
+		 *   var example_object = new ExampleObject();
+		 *   example_object.test = "pass";
+		 *   var success = client.add_object( "my-key", example_object );
+		 * }}}
+		 *
+		 * @param key The key
+		 * @param value The value
+		 * @param expires Optionally, the unix timestamp when the key expires
+		 * @return true if the key/value pair was stored successfully
+		 */
+		public bool add_object( string key, Object value, time_t expires = -1 ) {
+			return store_object( StoreMode.ADD, key, value, expires );
+		}
+
+		/**
 		 * Store a string value in the bucket.
 		 *
 		 * Example:
@@ -254,7 +376,7 @@ namespace Couchbase {
 		 *   // Add a new key
 		 *   var example_object = new ExampleObject();
 		 *   example_object.test = "pass";
-		 *   var success = client.store( StoreMode.ADD, "my-key", "example_object );
+		 *   var success = client.store( StoreMode.ADD, "my-key", example_object );
 		 * }}}
 		 *
 		 * @param mode The StoreMode for this action: ADD, REPLACE, or SET
