@@ -17,7 +17,7 @@ public class ClientTest {
 			} catch (Error e) {
 				has_error = true;
 				assert( e is Couchbase.ClientError.CONNECT_ERROR );
-				assert( e.message == "Unknown host" );
+				assert( "Error" in e.message );
 			}
 			assert(has_error);
 		});
