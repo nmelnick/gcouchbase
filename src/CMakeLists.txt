@@ -5,6 +5,9 @@ vala_precompile(LIBGCOUCHBASE_VALA_C
 	GenericResult.vala
 	GetResult.vala
 	StoreResult.vala
+	ViewResult.vala
+	ViewRow.vala
+	ViewQuery.vala
 	JSON/Serializer.vala
 	JSON/Deserializer.vala
 	JSON/Node.vala
