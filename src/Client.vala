@@ -20,6 +20,24 @@ namespace Couchbase {
 	}
 
 	/**
+	 * Possible errors when parsing or executing a query.
+	 */
+	public errordomain QueryError {
+		/**
+		 * A design document was not provided
+		 */
+		MISSING_DESIGN_DOCUMENT,
+		/**
+		 * A view was not provided
+		 */
+		MISSING_VIEW,
+		/**
+		 * Error executing query
+		 */
+		EXECUTE_ERROR
+	}
+
+	/**
 	 * Set the storage mode when using a store_ method.
 	 */
 	public enum StoreMode {
@@ -73,7 +91,7 @@ namespace Couchbase {
 		 *
 		 * Please note that timeouts is not stored on a per operation
 		 * base, but on the instance. That means you <b>can't</b> pipeline
-		 * two requests after eachother with different timeout values.
+		 * two requests after each other with different timeout values.
 		 */
 		public uint32 timeout {
 			get { return instance.timeout; }
@@ -800,6 +818,37 @@ namespace Couchbase {
 			return null;
 		}
 
+		/**
+		 * Execute a query against the current connection.
+		 * @param query Complete ViewQuery
+		 */
+		public ViewResult get_query( ViewQuery query ) throws QueryError {
+			instance.set_http_complete_callback(cb_http_complete);
+			var view_result = new ViewResult();
+			view_result.client = this;
+
+			var req = LibCouchbase.HttpRequest();
+			var cmd = LibCouchbase.HttpCommand() {
+				path = query.path_query().data,
+				method = LibCouchbase.HttpMethod.GET,
+				chunked = 0,
+				content_type = "application/json"
+			};
+			var buffer_bag = BufferBag();
+			var status = instance.make_http_request(
+				&buffer_bag,
+				LibCouchbase.HttpType.VIEW,
+				ref cmd,
+				ref req
+			);
+			if ( status != LibCouchbase.StatusResponse.SUCCESS ) {
+				throw new QueryError.EXECUTE_ERROR( instance.get_error(status) );
+			}
+			instance.wait();
+
+			return view_result;
+		}
+
 		private uint64 arithmetic( string key, uint64 initial_value, int64 delta, time_t expires = -1  ) {
 			instance.set_arithmetic_callback(cb_arithmetic);
 
@@ -853,6 +902,10 @@ namespace Couchbase {
 				result.pointer = &cas;
 				buffer_bag.result = result;
 			}
+		}
+
+		private static void cb_http_complete( LibCouchbase.HttpRequest request, LibCouchbase.Client instance, void* cookie, LibCouchbase.StatusResponse status, LibCouchbase.HttpResponse* response ) {
+
 		}
 	}
 }

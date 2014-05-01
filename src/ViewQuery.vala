@@ -136,5 +136,10 @@ namespace Couchbase {
 			this.query_skip = skip;
 			return this;
 		}
+
+		public string path_query() {
+			// "_design/test/_view/all?limit=10";
+			return "";
+		}
 	}
 }
