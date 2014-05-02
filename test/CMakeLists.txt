@@ -21,6 +21,7 @@ vala_precompile(OTHER_GCOUCH_VALA_C
 	test-runner-other.vala
 	json-serializer.vala
 	json-deserializer.vala
+	test-viewquery.vala
 	test-classes.vala
 PACKAGES
 	${LIVE_GCOUCH_VALA_PACKAGES}

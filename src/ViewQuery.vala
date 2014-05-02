@@ -1,3 +1,4 @@
+using Gee;
 namespace Couchbase {
 	/**
 	 * Object to build a query to a view. Uses fluent design pattern to build
@@ -22,7 +23,6 @@ namespace Couchbase {
 		private string? query_start_key;
 		private string? query_end_key;
 		private string? query_key;
-		private string[]? query_keys;
 		private bool query_is_descending = false;
 		private bool query_use_full_set = false;
 		private bool query_group_results = false;
@@ -109,17 +109,6 @@ namespace Couchbase {
 		}
 
 		/**
-		 * Return only documents that match any of the specified keys. Key must
-		 * be specified as a JSON value, so to specify "example", the quotes
-		 * must exist in the value.
-		 * @param key Start key value
-		 */
-		public ViewQuery keys ( string[] keys ) {
-			this.query_keys = keys;
-			return this;
-		}
-
-		/**
 		 * Limit the number of the returned documents to the specified number.
 		 * @param limit Max number of returned documents
 		 */
@@ -138,8 +127,37 @@ namespace Couchbase {
 		}
 
 		public string path_query() {
-			// "_design/test/_view/all?limit=10";
-			return "";
+			var pairs = new string[0];
+			string path = "/_design/%s/_view/%s".printf( query_design_doc, query_view );
+			if ( query_start_key != null ) {
+				pairs += "startkey=%s".printf( Uri.escape_string(query_start_key) );
+			}
+			if ( query_end_key != null ) {
+				pairs += "endkey=%s".printf( Uri.escape_string(query_end_key) );
+			}
+			if ( query_key != null ) {
+				pairs += "key=%s".printf( Uri.escape_string(query_key) );
+			}
+			if ( query_is_descending ) {
+				pairs += "descending=true";
+			}
+			if ( query_use_full_set ) {
+				pairs += "full_set=true";
+			}
+			if ( query_group_results ) {
+				pairs += "group=true";
+			}
+			if ( query_limit > 0 ) {
+				pairs += "limit=%d".printf(query_limit);
+			}
+			if ( query_skip > 0 ) {
+				pairs += "skip=%d".printf(query_skip);
+			}
+
+			if ( pairs.length > 0 ) {
+				path = path + "?" + string.joinv( "&", pairs );
+			}
+			return path;
 		}
 	}
 }

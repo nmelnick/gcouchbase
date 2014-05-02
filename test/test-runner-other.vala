@@ -6,5 +6,6 @@ void main (string[] args) {
 	Test.init( ref args );
 	JsonSerializerTest.add_tests();
 	JsonDeserializerTest.add_tests();
+	ViewQueryTest.add_tests();
 	Test.run();
 }
