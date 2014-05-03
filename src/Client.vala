@@ -822,10 +822,8 @@ namespace Couchbase {
 		 * Execute a query against the current connection.
 		 * @param query Complete ViewQuery
 		 */
-		public ViewResult get_query( ViewQuery query ) throws QueryError {
+		public ViewResult? get_query( ViewQuery query ) throws QueryError {
 			instance.set_http_complete_callback(cb_http_complete);
-			var view_result = new ViewResult();
-			view_result.client = this;
 
 			var req = LibCouchbase.HttpRequest();
 			var cmd = LibCouchbase.HttpCommand() {
@@ -845,8 +843,16 @@ namespace Couchbase {
 				throw new QueryError.EXECUTE_ERROR( instance.get_error(status) );
 			}
 			instance.wait();
+			if ( buffer_bag.has_result ) {
+				var result = (ViewResult) deserializer.deserialize(
+					( (GetResult) buffer_bag.result ).bytes_string(),
+					typeof(ViewResult)
+				);
+				result.set_client(this);
+				return result;
+			}
 
-			return view_result;
+			return null;
 		}
 
 		private uint64 arithmetic( string key, uint64 initial_value, int64 delta, time_t expires = -1  ) {
@@ -905,7 +911,13 @@ namespace Couchbase {
 		}
 
 		private static void cb_http_complete( LibCouchbase.HttpRequest request, LibCouchbase.Client instance, void* cookie, LibCouchbase.StatusResponse status, LibCouchbase.HttpResponse* response ) {
-
+			BufferBag* buffer_bag = (BufferBag*) cookie;
+			if ( status == LibCouchbase.StatusResponse.SUCCESS ) {
+				buffer_bag.has_result = true;
+				var result = new GetResult();
+				result.bytes = response.bytes;
+				buffer_bag.result = result;
+			}
 		}
 	}
 }

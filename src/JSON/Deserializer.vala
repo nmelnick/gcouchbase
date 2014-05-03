@@ -53,6 +53,7 @@ namespace Couchbase.JSON {
 				}
 				if ( member != null ) {
 					Value member_v = Value( ps.value_type );
+					o.get_property( ps.name, ref member_v );
 					if ( deserializers[ member.get_node_type() ].deserializer( ref member_v, member ) ) {
 						o.set_property( ps.name, member_v );
 					}
@@ -147,6 +148,18 @@ namespace Couchbase.JSON {
 					array.foreach_element(
 						( array, index, node ) => {
 							new_array.add( node.get_double() );
+						}
+					);
+					v.set_object(new_array);
+					return true;
+				case "JsonObject":
+					var target_value = ( (ArrayList) v ).element_type;
+					ArrayList<Object> new_array = new ArrayList<Object>();
+					array.foreach_element(
+						( array, index, node ) => {
+							Value obj_v = Value(target_value);
+							parse_object( ref obj_v, node );
+							new_array.add( (Object) obj_v );
 						}
 					);
 					v.set_object(new_array);

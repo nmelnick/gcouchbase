@@ -247,6 +247,35 @@ public class ClientTest {
 			get_result = client.get_result("baz");
 			assert( get_result == null );
 		});
+		Test.add_func("/gcouchbase/client/query", () => {
+			var client = get_client();
+			var query = new Couchbase.ViewQuery()
+				.design("dev_foo")
+				.view("by_foo")
+				.key(""""bar"""")
+				.full_set();
+			var result = client.get_query(query);
+			assert( result != null );
+			assert( result.total_rows > 0 );
+			assert( result.rows != null );
+			assert( result.rows.size == 1 );
+			assert( result.rows[0].id == "foo" );
+			assert( result.rows[0].key == "bar" );
+		});
+		Test.add_func("/gcouchbase/client/query/doc", () => {
+			var client = get_client();
+			var query = new Couchbase.ViewQuery()
+				.design("dev_foo")
+				.view("by_foo")
+				.key(""""bar"""")
+				.full_set();
+			var result = client.get_query(query);
+			assert( result != null );
+			assert( result.total_rows > 0 );
+			var doc = result.rows[0].get_document<FreakingClass>();
+			assert( doc != null );
+			assert( doc.freaking == "bar" );
+		});
 	}
 
 	private static Couchbase.Client get_client() {

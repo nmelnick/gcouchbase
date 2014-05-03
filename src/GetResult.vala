@@ -20,7 +20,7 @@ namespace Couchbase {
 		 */
 		public uint64 cas { get; set; }
 
-		private GetResult() {}
+		internal GetResult() {}
 
 		internal GetResult.from_response_info( LibCouchbase.GetResponseInfo info ) {
 			this.key = info.key;
