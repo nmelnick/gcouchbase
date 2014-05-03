@@ -9,7 +9,7 @@ valadoc \
 	--deps \
 	--vapidir=../vapi \
 	--doclet=html \
-	--driver=0.18.x \
+	--driver=0.24.x \
 	--pkg=glib-2.0 \
 	--pkg=gmodule-2.0 \
 	--pkg=gee-0.8 \

@@ -3,6 +3,7 @@ namespace Couchbase {
 	/**
 	 * Object to build a query to a view. Uses fluent design pattern to build
 	 * a query object that can be passed to client.get_query().
+	 *
 	 * Example use:
 	 * {{{
 	 *   var query = new ViewQuery()

@@ -1,4 +1,7 @@
 namespace Couchbase.JSON {
+	/**
+	 * Fake JSON Node.
+	 */
 	public class Node : Object {
 		private Json.Node node;
 

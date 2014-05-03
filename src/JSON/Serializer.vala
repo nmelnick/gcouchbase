@@ -2,7 +2,7 @@ using Gee;
 namespace Couchbase.JSON {
 
 	/**
-	 * Serialize to JSON.
+	 * Serialize class to JSON.
 	 */
 	public class Serializer : Object {
 		public delegate void SerializeValue( Value v, Json.Builder b );

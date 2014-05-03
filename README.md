@@ -74,6 +74,33 @@ public static int main( string[] args ) {
 }
 ```
 
+## Searching
+
+Search is provided using Couchbase views. To perform a query on a view, a
+ViewQuery object must be created to set the query options, and then that query
+can be passed to the Couchbase server.
+
+```vala
+// Using the "beer" design document, "by_name" view, provide 20 results.
+var query = new Couchbase.ViewQuery()
+					.design("beer")
+					.view("by_name")
+					.limit(20);
+
+// Execute the query
+var response = client.get_query(query);
+
+// Response has 'total_rows' and 'rows'. 
+foreach ( Couchbase.ViewRow row in response.rows ) {
+	// Output the ID and Name
+	stdout.printf( "%s: %s\n", row.id, row.key );
+
+	// Get the rest of the document as a Beer object
+	var beer = row.get_document<Beer>();
+	stdout.printf( "IBU: %d\n", beer.ibu );
+}
+```
+
 ## Advanced Couchbase Operations
 
 The libcouchbase instance can be accessed via the client.instance field. Through

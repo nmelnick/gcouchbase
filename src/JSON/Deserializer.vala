@@ -2,7 +2,10 @@ using Gee;
 namespace Couchbase.JSON {
 
 	/**
-	 * Deserialize from JSON.
+	 * Deserialize from JSON to a given class type.
+	 * For properties made of ArrayList, be sure to instantiate the ArrayList
+	 * so the deserializer knows the inner type. It seems wasteful, but without
+	 * it, Vala has no idea what the generic type is.
 	 */
 	public class Deserializer : Object {
 		public delegate bool DeserializeNode( ref Value v, Json.Node node );

@@ -17,7 +17,7 @@ namespace Couchbase {
 		 */
 		public ArrayList<ViewRow> rows { get; set; default = new ArrayList<ViewRow>(); }
 
-		public void set_client( Client client ) {
+		internal void set_client( Client client ) {
 			this.client = client;
 			if ( rows != null ) {
 				foreach ( var row in rows ) {
