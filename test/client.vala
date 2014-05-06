@@ -72,6 +72,7 @@ public class ClientTest {
 			FreakingClass? fc = client.get_object<FreakingClass>("foo");
 			assert( fc != null );
 			assert( fc.freaking == "bar" );
+			assert( fc.key_id == "foo" );
 		});
 		Test.add_func("/gcouchbase/client/store_bytes_result/valid-kv", () => {
 			var client = get_client();
@@ -290,5 +291,6 @@ public class ClientTest {
 }
 
 public class FreakingClass : Object {
+	public string? key_id { get; set; }
 	public string? freaking { get; set; }
 }

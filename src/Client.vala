@@ -226,7 +226,8 @@ namespace Couchbase {
 		}
 
 		/**
-		 * Retrieve the deserialized object of the value attached to a key
+		 * Retrieve the deserialized object of the value attached to a key. If
+		 * the object has a "key_id" property, it will be set to the key.
 		 *
 		 * Example:
 		 * {{{
@@ -239,7 +240,13 @@ namespace Couchbase {
 		public T? get_object<T>( string key ) {
 			string? json = this.get(key);
 			if ( json != null ) {
-				return (T) deserializer.deserialize( json, typeof(T) );
+				Object deserialized = deserializer.deserialize( json, typeof(T) );
+				if ( deserialized.get_class().find_property("key-id") != null ) {
+					var value = Value( typeof(string) );
+					value.set_string(key);
+					deserialized.set_property( "key-id", value );
+				}
+				return (T) deserialized;
 			}
 			return null;
 		}

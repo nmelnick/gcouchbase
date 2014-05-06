@@ -48,6 +48,10 @@ namespace Couchbase.JSON {
 					continue;
 				}
 
+				if ( ps.name == "key-id" ) {
+					continue;
+				}
+
 				// Only serialize property if we have a serializer
 				SerializeValueWrapper? serializer_wrapper = serializers[ps.value_type];
 				if ( serializer_wrapper == null && ps.value_type.is_object() ) {
