@@ -51,6 +51,14 @@ public class JsonSerializerTest : Object {
 			assert( result != null );
 			assert( result == """{"foo":true}""" );
 		});
+		Test.add_func("/gcouchbase/json/serialize/json/datetime", () => {
+			var json = new Couchbase.JSON.Serializer();
+			var o = new TestDateTimeObject();
+			o.foo = new DateTime.utc( 2014, 3, 15, 15, 5, 2 );
+			string result = json.serialize(o);
+			assert( result != null );
+			assert( result == """{"foo":"2014-03-15T15:05:02Z"}""" );
+		});
 		Test.add_func("/gcouchbase/json/serialize/json/string_array", () => {
 			var json = new Couchbase.JSON.Serializer();
 			string result = json.serialize( new TestStringArrayObject.with_data() );

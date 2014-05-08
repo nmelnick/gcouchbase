@@ -17,6 +17,7 @@ namespace Couchbase.JSON {
 			serializers[ typeof(bool) ] = new SerializeValueWrapper(serialize_bool);
 			serializers[ typeof(string[]) ] = new SerializeValueWrapper(serialize_stringarray);
 			serializers[ typeof(ArrayList) ] = new SerializeValueWrapper(serialize_arraylist);
+			serializers[ typeof(DateTime) ] = new SerializeValueWrapper(serialize_datetime);
 			serializers[ typeof(Object) ] = new SerializeValueWrapper(serialize_object);
 		}
 
@@ -93,6 +94,11 @@ namespace Couchbase.JSON {
 
 		private static void serialize_bool( Value v, Json.Builder b ) {
 			b.add_boolean_value( (bool) v );
+		}
+
+		private static void serialize_datetime( Value v, Json.Builder b ) {
+			string iso8601 = ( (DateTime) v ).format("%Y-%m-%dT%H:%M:%S%z").replace( "+0000", "Z" );
+			b.add_string_value(iso8601);
 		}
 
 		private static void serialize_stringarray( Value v, Json.Builder b ) {

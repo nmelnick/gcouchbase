@@ -32,6 +32,14 @@ public class JsonDeserializerTest : Object {
 			assert( o is TestBoolObject );
 			assert( ( (TestBoolObject) o ).foo == true );
 		});
+		Test.add_func("/gcouchbase/json/deserialize/json/datetime", () => {
+			var json = new Couchbase.JSON.Deserializer();
+			Object o = json.deserialize( """{"foo":"2014-03-15T15:05:02Z"}""", typeof( TestDateTimeObject ) );
+			assert( o != null );
+			assert( o is TestDateTimeObject );
+			var compare_dt = new DateTime.utc( 2014, 3, 15, 15, 5, 2 );
+			assert( ( (TestDateTimeObject) o ).foo.equal(compare_dt) );
+		});
 		Test.add_func("/gcouchbase/json/deserialize/json/object", () => {
 			var json = new Couchbase.JSON.Deserializer();
 			Object o = json.deserialize( """{"bar":{"foo":["bar","baz"]}}""", typeof( TestObjectObject ) );

@@ -87,6 +87,15 @@ namespace Couchbase.JSON {
 				case "CouchbaseJSONNode":
 					v.set_object( new Node(node) );
 					break;
+				case "GDateTime":
+					var timeval = TimeVal();
+					if ( timeval.from_iso8601( node.get_string() ) ) {
+						var dt = new DateTime.from_timeval_utc(timeval);
+						v.set_boxed(dt);
+					} else {
+						warning( "Unable to convert %s as ISO-8601 to DateTime".printf( node.get_string() ) );
+					}
+					break;
 				default:
 					return false;
 			}

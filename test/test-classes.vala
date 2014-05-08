@@ -39,6 +39,10 @@ public class TestBoolObject : Object {
 	public bool foo { get; set; }
 }
 
+public class TestDateTimeObject : Object {
+	public DateTime foo { get; set; }
+}
+
 public class TestStringArrayObject : Object {
 	public string[] foo { get; set; }
 
