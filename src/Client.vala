@@ -857,6 +857,8 @@ namespace Couchbase {
 				);
 				result.set_client(this);
 				return result;
+			} else {
+				throw new QueryError.EXECUTE_ERROR( instance.get_error(status) );
 			}
 
 			return null;

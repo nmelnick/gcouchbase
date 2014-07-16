@@ -28,12 +28,18 @@ namespace Couchbase.JSON {
 				parse_object( ref v, root );
 				o = v.get_object();
 			} catch (Error e) {
-				stderr.printf( "%s\n", e.message );
+				stderr.printf( "ERROR: %s\n", e.message );
 			}
 			return o;
 		}
 
 		public static bool parse_object( ref Value v, Json.Node node ) {
+			if ( v.type().name() == "gchararray" ) {
+				var generator = new Json.Generator();
+				generator.set_root(node);
+				v.set_string( generator.to_data(null) );
+				return true;
+			}
 			Object o = Object.new( v.type() );
 			Json.Object jo = node.get_object();
 			// Iterate through properties in given object
