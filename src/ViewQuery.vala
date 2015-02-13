@@ -1,5 +1,11 @@
 using Gee;
 namespace Couchbase {
+	public enum StaleMode {
+		FALSE,
+		OK,
+		UPDATE_AFTER
+	}
+
 	/**
 	 * Object to build a query to a view. Uses fluent design pattern to build
 	 * a query object that can be passed to client.get_query().
@@ -29,6 +35,7 @@ namespace Couchbase {
 		private bool query_group_results = false;
 		private int query_limit = 0;
 		private int query_skip = 0;
+		private StaleMode? stale_mode;
 		
 		/**
 		 * Set the design doc to query from.
@@ -127,6 +134,15 @@ namespace Couchbase {
 			return this;
 		}
 
+		/**
+		 * Allow, or disallow stale results in the results of a query.
+		 * @param stale Allowed StaleMode, defaults to FALSE
+		 */
+		public ViewQuery stale ( StaleMode stale = StaleMode.FALSE ) {
+			this.stale_mode = stale;
+			return this;
+		}
+
 		public string path_query() {
 			var pairs = new string[0];
 			string path = "/_design/%s/_view/%s".printf( query_design_doc, query_view );
@@ -153,6 +169,19 @@ namespace Couchbase {
 			}
 			if ( query_skip > 0 ) {
 				pairs += "skip=%d".printf(query_skip);
+			}
+			if ( stale_mode != null ) {
+				switch (stale_mode) {
+					case StaleMode.FALSE:
+						pairs += "stale=false";
+						break;
+					case StaleMode.OK:
+						pairs += "stale=ok";
+						break;
+					case StaleMode.UPDATE_AFTER:
+						pairs += "stale=update_after";
+						break;
+				}
 			}
 
 			if ( pairs.length > 0 ) {

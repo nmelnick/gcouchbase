@@ -27,5 +27,13 @@ public class ViewQueryTest {
 			assert( vq != null );
 			assert( vq.path_query() == "/_design/dev_test/_view/by_something?limit=10" );
 		});
+		Test.add_func("/gcouchbase/viewquery/stale", () => {
+			var vq = new Couchbase.ViewQuery()
+				.design("dev_test")
+				.view("by_something")
+				.stale(Couchbase.StaleMode.OK);
+			assert( vq != null );
+			assert( vq.path_query() == "/_design/dev_test/_view/by_something?stale=ok" );
+		});
 	}
 }
