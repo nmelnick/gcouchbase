@@ -1,5 +1,5 @@
 /* 
-  Copyright (C) 2013, Nicholas Melnick
+  Copyright (C) 2013-2016, Nicholas Melnick
 
   Permission is hereby granted, free of charge, to any person obtaining a copy of
   this software and associated documentation files (the "Software"), to deal in
@@ -151,10 +151,11 @@ namespace LibCouchbase {
 		 */
 		CLIENT_ENOMEM,
 		/**
-		 * The client encountered a temporary error (retry might resolve
-		 * the problem)
+		 * Client could not schedule the request. This is typically received
+		 * when an operation is requested before the initial bootstrap has
+		 * completed
 		 */
-		CLIENT_ETMPFAIL,
+		CLIENT_ENOCONF,
 		/**
 		 * The instance of libcouchbase can't be used in this context
 		 */
@@ -227,6 +228,247 @@ namespace LibCouchbase {
 		 * manpage for LCB_MAX_REDIRECTS options to get/set this limit.
 		 */
 		TOO_MANY_REDIRECTS,
+
+		/**
+         * May be received in operation callbacks if the cluster toplogy changed
+		 * and the library could not remap the command to a new node. This may
+         * be because the internal structure lacked sufficient information to
+         * recreate the packet, or because the configuration settings indicated
+         * that the command should not be retried.
+         * @see LCB_CNTL_RETRYMODE
+         */
+		MAP_CHANGED,
+
+		/**
+         * Returned from the lcb_pktfwd3() function if an incomplete packet was
+		 * passed
+         */
+		INCOMPLETE_PACKET,
+
+		/**
+         * Mapped directly to the system `ECONNREFUSED` errno. This is received
+		 * in callbacks if an initial connection to the node could not be
+         * established. Check your firewall settings and ensure the specified
+         * service is online.
+         */
+		ECONNREFUSED,
+
+		/**
+         * Returned in a callback if the socket connection was gracefully
+         * closed, but the library wasn't expecting it. This may happen if the
+         * system is being shut down.
+		 * @lcb_see_detailed_neterr
+         */
+		ESOCKSHUTDOWN,
+
+		/**
+		 * Returned in a callback if the socket connection was forcefully reset,
+		 * Equivalent to the system `ECONNRESET`.
+		 * @lcb_see_detailed_neterr
+		 */
+		ECONNRESET,
+
+		/**
+		 * Returned in a callback if the library could not allocated a local
+		 * socket due to TCP local port exhaustion. This means you have either
+		 * found a bug in the library or are creating too many TCP connections.
+		 * Keep in mind that a TCP connection will still occupy a slot in your
+		 * system socket table even after it has been closed (and will thus
+		 * appear in a `TIME_WAIT` state).
+		 * @lcb_see_detailed_neterr
+		 */
+		ECANTGETPORT,
+
+		/**
+		 * Returned if the library could not allocate a new file descriptor for
+		 * a socket or other resource. This may be more common on systems (such
+		 * as Mac OS X) which have relatively low limits for file descriptors.
+		 * To raise the file descriptor limit, refer to the `ulimit -n` command
+		 * @lcb_see_detailed_neterr
+		 */
+		EFDLIMITREACHED,
+
+		/**
+		 * Returned in callback if the host or subnet containing a node could
+		 * not be contacted. This may be a result of a bad routing table or
+		 * being physically disconnected from the network.
+		 * @lcb_see_detailed_neterr.
+		 */
+		ENETUNREACH,
+
+		/**
+		 * An unrecognized setting was passed to the lcb_cntl() function
+		 * @lcb_see_detailed_neterr
+		 */
+		ECTL_UNKNOWN,
+
+		/**
+		 * An invalid operation was supplied for a setting to lcb_cntl(). This
+		 * will happen if you try to write to a read-only setting, or retrieve a
+		 * value which may only be set. Refer to the documentation for an
+		 * individual setting
+		 * to see what modes it supports.
+		 * @lcb_see_detailed_neterr
+		 */
+		ECTL_UNSUPPMODE,
+
+		/**
+		 * A malformed argument was passed to lcb_cntl() for the given setting.
+		 * See the documentation for the setting to see what arguments it
+		 * supports and how they are to be supplied.
+		 * @lcb_see_detailed_neterr
+		 */
+		ECTL_BADARG,
+
+		/**
+		 * An empty key was passed to an operation. Most commands do not accept
+		 * empty keys.
+		 */
+		EMPTY_KEY,
+
+		/**
+		 * A problem with the SSL system was encountered. Use logging to
+		 * discover what happened. This error will only be thrown if something
+		 * internal to the SSL library failed (for example, a bad certificate or
+		 * bad user input); otherwise a network error will be thrown if an SSL
+		 * connection was terminated
+		 */
+		SSL_ERROR,
+
+		/**
+		 * The certificate the server sent cannot be verified. This is a
+		 * possible case of a man-in-the-middle attack, but also of forgetting
+		 * to supply the path to the CA authority to the library.
+		 */
+		SSL_CANTVERIFY,
+		
+		/**
+		 * Internal error used for destroying unscheduled command data
+		 */
+		SCHEDFAIL_INTERNAL,
+		
+		/**
+		 * An optional client feature was requested, but the current
+		 * configuration does not allow it to be used. This might be because it
+		 * is not available on a particular platform/architecture/operating
+		 * system/configuration, or it has been disabled at the time the library
+		 * was built.
+		 */
+		CLIENT_FEATURE_UNAVAILABLE,
+
+		/**
+		 * An option was passed to a command which is incompatible with other
+		 * options. This may happen if two fields are mutually exclusive
+		 */
+		OPTIONS_CONFLICT,
+
+		/**
+		 * Received in callbacks if an operation failed because of a negative
+		 * HTTP status code
+		 */
+		HTTP_ERROR,
+		
+		/**
+		 * Scheduling error received if @ref LCB_CNTL_DURABILITY_MUTATION_TOKENS
+		 * was enabled, but there is no available mutation token for the key.
+		 */
+		DURABILITY_NO_MUTATION_TOKENS,
+		
+		/**
+		 * The server replied with an unrecognized status code
+		 */
+		UNKNOWN_MEMCACHED_ERROR,
+		
+		/**
+		 * The server replied that the given mutation has been lost
+		 */
+		MUTATION_LOST,
+		
+		/**
+		 * Sub-document path does not exist
+		 */
+		SUBDOC_PATH_ENOENT,
+		
+		/**
+		 * Type of element in sub-document path conflicts with type in document
+		 */
+		SUBDOC_PATH_MISMATCH,
+		
+		/**
+		 * Malformed sub-document path
+		 */
+		SUBDOC_PATH_EINVAL,
+		
+		/**
+		 * Sub-document contains too many components
+		 */
+		SUBDOC_PATH_E2BIG,
+		
+		/**
+		 * Existing document contains too many levels of nesting
+		 */
+		SUBDOC_DOC_E2DEEP,
+		
+		/**
+		 * Subdocument operation would invalidate the JSON
+		 */
+		SUBDOC_VALUE_CANTINSERT,
+		
+		/**
+		 * Existing document is not valid JSON
+		 */
+		SUBDOC_DOC_NOTJSON,
+		
+		/**
+		 * The existing numeric value is too large
+		 */
+		SUBDOC_NUM_ERANGE,
+		
+		/**
+		 * Delta must be numeric, within the 64 bit signed range, and non-zero
+		 */
+		SUBDOC_BAD_DELTA,
+		
+		/**
+		 * The given path already exists in the document
+		 */
+		SUBDOC_PATH_EEXISTS,
+		
+		/**
+		 * Could not execute one or more multi lookups or mutations
+		 */
+		SUBDOC_MULTI_FAILURE,
+		
+		/**
+		 * Value is too deep to insert
+		 */
+		SUBDOC_VALUE_E2DEEP,
+		
+		/**
+		 * A badly formatted packet was sent to the server. Please report this
+		 * in a bug
+		 */
+		EINVAL_MCD,
+		
+		/**
+		 * Missing subdocument path
+		 */
+		EMPTY_PATH,
+		
+		/**
+		 * Unknown subdocument command
+		 */
+		UNKNOWN_SDCMD,
+		
+		/**
+		 * No commands specified
+		 */
+		ENO_COMMANDS,
+		
+		/**
+		 * Query execution failed. Inspect raw response object for information
+		 */
+		QUERY_ERROR
 	}
 
 	[CCode (cname = "lcb_io_ops_type_t", cprefix = "LCB_IO_OPS_", has_type_id = false)]
