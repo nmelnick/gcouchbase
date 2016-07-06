@@ -1,0 +1,14 @@
+# Documents
+
+foo:
+{
+	"freaking": "bar"
+}
+
+# Views
+
+dev_foo:
+	by_foo:
+		function (doc, meta) {
+		  emit(doc.freaking, null);
+		}
