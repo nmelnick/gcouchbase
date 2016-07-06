@@ -30,7 +30,7 @@ set (VAPIDIRS
 	--vapidir='${CMAKE_SOURCE_DIR}/vapi'
 )
 set (DEFAULT_VALA_OPTIONS
-	--pkg libcouchbase
+	--pkg libcouchbasev3
 	${VAPIDIRS}
 	--enable-experimental
 	--target-glib=2.32
