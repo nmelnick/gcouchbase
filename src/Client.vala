@@ -145,32 +145,29 @@ namespace Couchbase {
 		 *
 		 * Default example to localhost:8091:
 		 * {{{
-		 *   var client = new Couchbase.Client("http://localhost:8091/pools");
+		 *   var client = new Couchbase.Client("couchbase://localhost");
 		 * }}}
 		 * Example to outside host, using the bucket "mybucket".
 		 * {{{
-		 *   var client = new Couchbase.Client( "http://cb-server:8091", "mybucket" );
+		 *   var client = new Couchbase.Client("couchbase://cb-server:8091/mybucket");
 		 * }}}
 		 *
-		 * @param host Host or hosts to connect to. This can be a single URI in
-		 *             the form [[http://localhost:8091/pools]], or a list of
-		 *             host:port, separated by ';'.
+		 * @param connectString Host or hosts to connect to. This can be a
+		 *         single URI in the form [[couchbase://localhost:8091]], or a
+		 *         list of host:port, separated by ';'.
 		 * @param username Username or bucket name
 		 * @param password Password for the given bucket
 		 */
-		public Client( string host, string? username = null, string? password = null ) throws ClientError {
+		public Client( string connectString, string? username = null, string? password = null ) throws ClientError {
 
 			// Set connection options
 			var connect_options = LibCouchbase.ConnectionOptions();
-			if ( host != null ) {
-				connect_options.v0_host = host;
-			}
+			connect_options.v3_connstr = connectString;
 			if ( username != null ) {
-				connect_options.v0_bucket = username;
-				connect_options.v0_user = username;
+				connect_options.v3_username = username;
 			}
 			if ( password != null ) {
-				connect_options.v0_passwd = password;
+				connect_options.v3_passwd = password;
 			}
 
 			// Set IO on connection options
